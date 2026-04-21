@@ -103,6 +103,84 @@ const products = [
         image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80",
         isNew: true,
         category: "tshirts"
+    },
+    {
+        id: 9,
+        title: "Casual Blue Shirt",
+        brand: "ZUBRIKA",
+        price: 999,
+        originalPrice: 1499,
+        discount: 33,
+        rating: 4.5,
+        reviews: 42,
+        image: "assets/shirts/blue.webp",
+        isNew: true,
+        category: "shirts"
+    },
+    {
+        id: 10,
+        title: "Essential Red Checkered Shirt",
+        brand: "ZUBRIKA",
+        price: 1199,
+        originalPrice: 1699,
+        discount: 29,
+        rating: 4.7,
+        reviews: 85,
+        image: "assets/shirts/red.jpg",
+        isNew: false,
+        category: "shirts"
+    },
+    {
+        id: 11,
+        title: "Premium White Solid Shirt",
+        brand: "ZUBRIKA",
+        price: 1499,
+        originalPrice: 1999,
+        discount: 25,
+        rating: 4.9,
+        reviews: 120,
+        image: "assets/shirts/white.jpg",
+        isNew: true,
+        category: "shirts"
+    },
+    {
+        id: 12,
+        title: "Zubrika Signature T-Shirt",
+        brand: "ZUBRIKA",
+        price: 699,
+        originalPrice: 999,
+        discount: 30,
+        rating: 4.6,
+        reviews: 215,
+        image: "assets/t-shirt/t-shirt.jpg",
+        isNew: false,
+        category: "tshirts"
+    },
+    {
+        id: 13,
+        title: "Classic Printed T-Shirt",
+        brand: "ZUBRIKA",
+        price: 799,
+        originalPrice: 1199,
+        discount: 33,
+        rating: 4.4,
+        reviews: 94,
+        image: "assets/t-shirt/t-shirt 2.jpg",
+        isNew: true,
+        category: "tshirts"
+    },
+    {
+        id: 14,
+        title: "Urban Graphic T-Shirt",
+        brand: "ZUBRIKA",
+        price: 899,
+        originalPrice: 1299,
+        discount: 30,
+        rating: 4.8,
+        reviews: 167,
+        image: "assets/t-shirt/t-shirt 3.jpg",
+        isNew: false,
+        category: "tshirts"
     }
 ];
 
@@ -163,7 +241,46 @@ const orderIdEl = document.getElementById('order-id');
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
-    renderProducts(products);
+    
+    // Check URL parameters and Pathname for category
+    const urlParams = new URLSearchParams(window.location.search);
+    const catParam = urlParams.get('category');
+    
+    let pathCat = '';
+    const path = window.location.pathname;
+    if (path.includes('t-shirts.html')) pathCat = 'tshirts';
+    else if (path.includes('shirts.html')) pathCat = 'shirts';
+    else if (path.includes('pant.html')) pathCat = 'pants';
+    else if (path.includes('accessories.html')) pathCat = 'outerwear';
+
+    const finalCat = catParam || pathCat;
+    
+    if (finalCat) {
+        if (finalCat === 'new') {
+            // we will need to add filter logic for 'new'
+            filterState.isNew = true;
+        } else {
+            const actualCategory = finalCat === 'accessories' ? 'outerwear' : finalCat;
+            filterState.categories = [actualCategory];
+        }
+    }
+    
+    // Sync checkboxes
+    const categoryCheckboxes = document.querySelectorAll('input[name="category"]');
+    if (filterState.categories.length > 0 && categoryCheckboxes.length > 0) {
+        categoryCheckboxes.forEach(cb => {
+            cb.checked = filterState.categories.includes(cb.value);
+        });
+    }
+
+    if (document.getElementById('product-list')) {
+        applyFilters();
+    }
+    
+    if (document.getElementById('orders-list')) {
+        renderOrders();
+    }
+
     updateCartUI();
     setupEventListeners();
 });
@@ -422,6 +539,11 @@ function selectSize(btn, size) {
 function applyFilters() {
     let result = [...products];
     
+    // Filter by New Arrivals if needed
+    if (filterState.isNew) {
+        result = result.filter(p => p.isNew);
+    }
+    
     // Filter Category
     if (filterState.categories.length > 0) {
         result = result.filter(p => filterState.categories.includes(p.category));
@@ -450,6 +572,47 @@ function applyFilters() {
 
 // Event Listeners Setup
 function setupEventListeners() {
+    // Category scroll and filter logic
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const target = this.getAttribute('href');
+            const categories = ['tshirts', 'shirts', 'pants', 'outerwear', 'accessories'];
+            const categoryMatch = categories.find(cat => target === `#${cat}`);
+            
+            if (categoryMatch) {
+                e.preventDefault();
+                const actualCategory = categoryMatch === 'accessories' ? 'outerwear' : categoryMatch;
+                
+                // Update checkboxes
+                categoryCheckboxes.forEach(cb => {
+                    cb.checked = (cb.value === actualCategory);
+                });
+                
+                // Update filter state and apply
+                filterState.categories = [actualCategory];
+                applyFilters();
+                
+                // Scroll to products
+                const productsSec = document.getElementById('products');
+                if (productsSec) {
+                    const offset = 80;
+                    const bodyRect = document.body.getBoundingClientRect().top;
+                    const elementRect = productsSec.getBoundingClientRect().top;
+                    const elementPosition = elementRect - bodyRect;
+                    const offsetPosition = elementPosition - offset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+                
+                // Close mobile menu if open
+                closeMobileMenu();
+            }
+        });
+    });
+
     // Theme Toggle
     themeToggleBtn.addEventListener('click', () => {
         let currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
@@ -670,6 +833,22 @@ function completeCheckout() {
     const orderId = 'ZB-' + Math.floor(Math.random() * 1000000);
     orderIdEl.textContent = orderId;
     
+    // Save order history natively
+    let previousOrders = JSON.parse(localStorage.getItem('zubrikaOrders')) || [];
+    let subtotal = 0;
+    cart.forEach(item => subtotal += (item.price * item.quantity));
+    
+    const newOrder = {
+        id: orderId,
+        date: new Date().toISOString(),
+        items: [...cart],
+        total: subtotal + 100, // +100 for shipping
+        status: 'Processing'
+    };
+    
+    previousOrders.unshift(newOrder); // Add to beginning
+    localStorage.setItem('zubrikaOrders', JSON.stringify(previousOrders));
+    
     cart = [];
     saveCart();
     updateCartUI();
@@ -679,6 +858,65 @@ function completeCheckout() {
     document.documentElement.style.overflow = ''; // Unlock for success modal
     
     successModal.classList.add('active');
+}
+
+function renderOrders() {
+    const ordersContainer = document.getElementById('orders-list');
+    if (!ordersContainer) return; // Ensure we only run on orders.html
+
+    const orders = JSON.parse(localStorage.getItem('zubrikaOrders')) || [];
+    
+    if (orders.length === 0) {
+        ordersContainer.innerHTML = '<div style="text-align:center; padding: 40px; font-weight:800; font-size:1.5rem; border: 4px solid var(--primary-color);">You have no past orders.</div>';
+        return;
+    }
+    
+    ordersContainer.innerHTML = '';
+    orders.forEach(order => {
+        const d = new Date(order.date);
+        const dateStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        let itemsHtml = '';
+        order.items.forEach(item => {
+            itemsHtml += `
+                <div class="checkout-item-mini" style="margin-bottom: 10px; border-bottom: 2px solid #ccc; padding-bottom: 10px;">
+                    <img src="${item.image}" alt="${item.title}" style="width: 60px; height: 60px; object-fit: cover; border: 2px solid var(--primary-color);">
+                    <div style="flex-grow:1; margin-left: 10px;">
+                        <div style="font-weight:800;font-size:0.9rem;">${item.title}</div>
+                        <div style="font-size:0.8rem; font-weight:600;">Qty: ${item.quantity} | Size: ${item.size}</div>
+                        <div style="font-weight:800;margin-top:5px;">₹${item.price}</div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        const orderEl = document.createElement('div');
+        orderEl.className = 'order-card';
+        // Neo-brutalist styling inline matching platform design
+        orderEl.style = "border: 4px solid var(--primary-color); padding: 20px; margin-bottom: 30px; background: #fff; box-shadow: 4px 4px 0px 0px var(--shadow-color);";
+        
+        orderEl.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom: 4px solid var(--primary-color); padding-bottom: 15px; margin-bottom: 15px;">
+                <div>
+                    <h3 style="font-size: 1.2rem; font-weight: 800;">Order #${order.id}</h3>
+                    <p style="font-size: 0.9rem; font-weight: 600;">Placed: ${dateStr}</p>
+                </div>
+                <div style="text-align: right;">
+                    <div class="badge" style="background: var(--accent-yellow); color:#111; border: 2px solid #111; padding: 5px 10px; font-weight:800; display:inline-block; font-size:0.8rem;">
+                        <i class="fas fa-box"></i> ${order.status}
+                    </div>
+                    <div style="font-size: 1.2rem; font-weight: 900; margin-top: 10px;">Total: ₹${order.total}</div>
+                </div>
+            </div>
+            <div class="order-items-wrap">
+                ${itemsHtml}
+            </div>
+            <div style="margin-top: 20px; display:flex; gap: 10px;">
+                <button class="btn btn-primary" onclick="alert('Tracking information will be available once the order is shipped.')" style="padding: 10px 15px; font-size: 0.9rem; width: 100%; border: 3px solid var(--primary-color);">TRACK ORDER</button>
+            </div>
+        `;
+        ordersContainer.appendChild(orderEl);
+    });
 }
 
 function closeSuccessModal() {
