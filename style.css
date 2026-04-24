@@ -134,9 +134,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .header-container {
-    max-width: 1400px;
+    max-width: 1600px;
     margin: 0 auto;
-    padding: 15px 40px;
+    padding: 20px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -145,11 +145,12 @@ h1, h2, h3, h4, h5, h6 {
 .logo h1 {
     font-size: 2rem;
     letter-spacing: -0.05em;
+    margin-right: 40px;
 }
 
 .nav-links {
     display: flex;
-    gap: 30px;
+    gap: 40px;
 }
 
 .nav-links a {
@@ -180,7 +181,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .header-actions {
     display: flex;
-    gap: 15px;
+    gap: 25px;
     align-items: center;
 }
 
@@ -191,7 +192,7 @@ h1, h2, h3, h4, h5, h6 {
     cursor: pointer;
     position: relative;
     color: var(--primary-color);
-    padding: 5px;
+    padding: 8px;
     transition: transform 0.2s;
 }
 
@@ -201,8 +202,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .header-search-container {
     flex-grow: 1;
-    max-width: 400px;
-    margin: 0 40px;
+    max-width: 500px;
+    margin: 0 50px;
     position: relative;
     display: flex;
 }
