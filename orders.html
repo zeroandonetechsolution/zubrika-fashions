@@ -291,5 +291,29 @@
     </div>
 
     <script src="app.js"></script>
+<!-- Tracking Modal -->
+    <div class="modal-overlay" id="tracking-overlay"></div>
+    <div class="pdp-modal tracking-modal" id="tracking-modal" style="max-width: 600px;">
+        <button class="close-modal-btn" id="close-tracking-btn">&times;</button>
+        <div class="pdp-content" style="display: block; padding: 40px;">
+            <div class="tracking-header" style="margin-bottom: 30px; border-bottom: 4px solid var(--primary-color); padding-bottom: 20px;">
+                <h2 id="tracking-order-id" style="font-size: 2rem; margin-bottom: 10px;">TRACK ORDER</h2>
+                <div id="tracking-status-badge" class="badge" style="background: var(--accent-yellow); color:#111; border: 2px solid #111; padding: 5px 15px; font-weight:800; display:inline-block; font-size:1rem;"></div>
+            </div>
+            
+            <div class="tracking-timeline-container">
+                <!-- Timeline inject via JS -->
+            </div>
+
+            <div class="tracking-details" style="margin-top: 40px; padding: 20px; border: 3px solid var(--primary-color); background: var(--bg-color); box-shadow: 4px 4px 0px 0px var(--shadow-color);">
+                <h3 style="font-size: 1.2rem; margin-bottom: 15px;">ESTIMATED DELIVERY</h3>
+                <p id="est-delivery-date" style="font-weight: 800; font-size: 1.5rem; color: var(--accent-red);"></p>
+                <p style="font-size: 0.9rem; font-weight: 600; margin-top: 10px; opacity: 0.8;">Your package is being handled by Zubrika Logistics.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+
 </body>
 </html>

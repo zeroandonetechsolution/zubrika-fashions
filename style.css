@@ -655,6 +655,14 @@ h1, h2, h3, h4, h5, h6 {
     background-color: var(--accent-yellow);
 }
 
+.product-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: var(--border-width) solid var(--primary-color);
+}
+
 .product-image {
     width: 100%;
     aspect-ratio: 4/5;
@@ -662,6 +670,7 @@ h1, h2, h3, h4, h5, h6 {
     border-bottom: var(--border-width) solid var(--primary-color);
     overflow: hidden;
     position: relative;
+    order: 3; /* Image comes after the button */
 }
 
 .product-image img {
@@ -675,57 +684,24 @@ h1, h2, h3, h4, h5, h6 {
     transform: scale(1.05);
 }
 
-.product-info {
-    padding: 20px;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
+.product-card-bottom {
+    padding: 15px;
+    background: #fff;
+    order: 4;
 }
 
 .product-brand {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     font-weight: 800;
-    color: #666;
-    margin-bottom: 5px;
+    color: #888;
+    text-transform: uppercase;
 }
 
 .product-title {
-    font-size: 1.2rem;
-    margin-bottom: 15px;
-    flex-grow: 1;
-}
-
-.product-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.product-price {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.current-price {
-    font-size: 1.4rem;
+    font-size: 0.9rem;
     font-weight: 900;
-}
-
-.original-price {
-    text-decoration: line-through;
-    color: #888;
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-.product-rating {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-weight: 800;
-    font-size: 0.9rem;
+    text-transform: uppercase;
+    margin-top: 5px;
 }
 
 .fa-star {
@@ -733,11 +709,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .add-to-cart-btn {
-    width: 100%;
+    width: calc(100% - 30px);
+    margin: 10px 15px;
     background-color: var(--primary-color);
     color: var(--secondary-color);
-    border-color: var(--primary-color);
-    box-shadow: 4px 4px 0px 0px rgba(0,0,0,0.2);
+    border: none;
+    font-weight: 900;
+    padding: 15px;
+    font-size: 1rem;
+    order: 2; /* After top bar */
 }
 
 .add-to-cart-btn:hover {
@@ -1478,3 +1458,118 @@ h1, h2, h3, h4, h5, h6 {
         max-width: 100%;
     }
 }
+
+
+.tracking-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    position: relative;
+    padding-left: 40px;
+}
+
+.tracking-timeline::before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 5px;
+    bottom: 5px;
+    width: 4px;
+    background: var(--primary-color);
+    opacity: 0.2;
+}
+
+.timeline-step {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -33px;
+    top: 5px;
+    width: 14px;
+    height: 14px;
+    background: var(--bg-color);
+    border: 3px solid var(--primary-color);
+    border-radius: 0; /* Brutalism */
+    z-index: 1;
+    transition: all 0.3s;
+}
+
+.timeline-step.completed .timeline-dot {
+    background: var(--accent-yellow);
+    transform: rotate(45deg); /* Brutalist diamond */
+}
+
+.timeline-step.active .timeline-dot {
+    background: var(--accent-red);
+    box-shadow: 0 0 0 4px var(--bg-color), 0 0 0 7px var(--accent-red);
+}
+
+.timeline-label {
+    font-weight: 900;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+}
+
+.timeline-time {
+    font-size: 0.8rem;
+    font-weight: 600;
+    opacity: 0.6;
+}
+
+.timeline-step.completed .timeline-label {
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
+.tracking-modal {
+    border: 4px solid var(--primary-color) !important;
+    box-shadow: 12px 12px 0px 0px var(--shadow-color) !important;
+}
+
+/* WhatsApp Floating Button */
+.whatsapp-float {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #fff;
+    color: #25d366;
+    border-radius: 50px;
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    z-index: 999;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.05);
+}
+
+.whatsapp-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.whatsapp-content i {
+    font-size: 1.5rem;
+    color: #25d366;
+}
+
+
+@media (max-width: 768px) {
+    .desktop-only-actions {
+        display: none !important;
+    }
+}
+

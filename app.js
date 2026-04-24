@@ -320,25 +320,25 @@ function renderProducts(productsToRender) {
             <div class="product-badges">
                 ${badgesHtml}
             </div>
+            <div class="product-card-top">
+                <div class="product-price">
+                    <span class="current-price">₹${product.price}</span>
+                    ${product.originalPrice ? `<span class="original-price">₹${product.originalPrice}</span>` : ''}
+                </div>
+                <div class="product-rating">
+                    <i class="fas fa-star"></i>
+                    <span>${product.rating}</span>
+                </div>
+            </div>
+            <button class="btn btn-primary add-to-cart-btn" onclick="addToCart(${product.id}, 'L')">
+                ADD TO BAG
+            </button>
             <div class="product-image" onclick="openPDP(${product.id})" style="cursor: pointer;">
                 <img src="${product.image}" loading="lazy" alt="${product.title}">
             </div>
-            <div class="product-info">
+            <div class="product-card-bottom">
                 <div class="product-brand">${product.brand}</div>
                 <h3 class="product-title" onclick="openPDP(${product.id})" style="cursor: pointer;">${product.title}</h3>
-                <div class="product-meta">
-                    <div class="product-price">
-                        <span class="current-price">₹${product.price}</span>
-                        ${product.originalPrice ? `<span class="original-price">₹${product.originalPrice}</span>` : ''}
-                    </div>
-                    <div class="product-rating">
-                        <i class="fas fa-star"></i>
-                        <span>${product.rating}</span>
-                    </div>
-                </div>
-                <button class="btn btn-primary add-to-cart-btn" onclick="addToCart(${product.id}, 'L')">
-                    ADD TO BAG
-                </button>
             </div>
         `;
         
@@ -912,7 +912,7 @@ function renderOrders() {
                 ${itemsHtml}
             </div>
             <div style="margin-top: 20px; display:flex; gap: 10px;">
-                <button class="btn btn-primary" onclick="alert('Tracking information will be available once the order is shipped.')" style="padding: 10px 15px; font-size: 0.9rem; width: 100%; border: 3px solid var(--primary-color);">TRACK ORDER</button>
+                <button class="btn btn-primary" onclick="openTracking('${order.id}')" style="padding: 10px 15px; font-size: 0.9rem; width: 100%; border: 3px solid var(--primary-color);">TRACK ORDER</button>
             </div>
         `;
         ordersContainer.appendChild(orderEl);
@@ -923,3 +923,191 @@ function closeSuccessModal() {
     successModal.classList.remove('active');
     window.location.href = '#';
 }
+
+
+function openTracking(orderId) {
+    const orders = JSON.parse(localStorage.getItem('zubrikaOrders')) || [];
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+
+    const trackingModal = document.getElementById('tracking-modal');
+    const trackingOverlay = document.getElementById('tracking-overlay');
+    const trackingOrderId = document.getElementById('tracking-order-id');
+    const trackingStatusBadge = document.getElementById('tracking-status-badge');
+    const timelineContainer = document.querySelector('.tracking-timeline-container');
+    const estDeliveryEl = document.getElementById('est-delivery-date');
+
+    trackingOrderId.textContent = `ORDER #${order.id}`;
+    
+    // Simulate status advancement based on time
+    const orderTime = new Date(order.date).getTime();
+    const now = new Date().getTime();
+    const minsSinceOrder = (now - orderTime) / (1000 * 60);
+
+    let status = 'Order Placed';
+    let progress = 1;
+
+    if (minsSinceOrder > 10) {
+        status = 'Processing';
+        progress = 2;
+    }
+    if (minsSinceOrder > 60) {
+        status = 'Shipped';
+        progress = 3;
+    }
+    if (minsSinceOrder > 1440) { // 24 hours
+        status = 'In Transit';
+        progress = 4;
+    }
+    if (minsSinceOrder > 4320) { // 3 days
+        status = 'Out for Delivery';
+        progress = 5;
+    }
+    if (minsSinceOrder > 5760) { // 4 days
+        status = 'Delivered';
+        progress = 6;
+    }
+
+    trackingStatusBadge.innerHTML = `<i class="fas fa-box"></i> ${status}`;
+
+    // Calculate Estimated Delivery (Order Date + 4 days)
+    const estDate = new Date(orderTime + (4 * 24 * 60 * 60 * 1000));
+    estDeliveryEl.textContent = estDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    const timelineSteps = [
+        { label: 'Order Placed', time: 'Confirmed' },
+        { label: 'Processing', time: 'Quality Check' },
+        { label: 'Shipped', time: 'Mumbai Hub' },
+        { label: 'In Transit', time: 'Nearest Station' },
+        { label: 'Out for Delivery', time: 'Arriving Today' },
+        { label: 'Delivered', time: 'Package Handed Over' }
+    ];
+
+    let timelineHtml = '<div class="tracking-timeline">';
+    timelineSteps.forEach((step, index) => {
+        const stepNum = index + 1;
+        let stepClass = 'timeline-step';
+        if (stepNum < progress) stepClass += ' completed';
+        if (stepNum === progress) stepClass += ' active';
+
+        timelineHtml += `
+            <div class="${stepClass}">
+                <div class="timeline-dot"></div>
+                <div class="timeline-label">${step.label}</div>
+                <div class="timeline-time">${stepNum <= progress ? step.time : 'Pending'}</div>
+            </div>
+        `;
+    });
+    timelineHtml += '</div>';
+    
+    timelineContainer.innerHTML = timelineHtml;
+
+    trackingModal.classList.add('active');
+    trackingOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeTracking() {
+    const trackingModal = document.getElementById('tracking-modal');
+    const trackingOverlay = document.getElementById('tracking-overlay');
+    trackingModal.classList.remove('active');
+    trackingOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function closeSuccessModal() {
+    successModal.classList.remove('active');
+    window.location.href = '#';
+}
+
+// Search Modal Logic
+document.addEventListener('DOMContentLoaded', () => {
+    const searchModalTemplate = `
+    <div class="search-modal" id="search-modal">
+        <div class="search-overlay" id="search-overlay"></div>
+        <div class="search-content">
+            <div class="search-header" style="display: flex; gap: 20px; align-items: center; margin-bottom: 20px;">
+                <input type="text" id="search-input" class="brutal-input search-input" placeholder="Search for T-Shirts, Pants, etc..." autocomplete="off" style="flex-grow: 1; padding: 20px; font-size: 1.5rem; font-weight: 800; border: 4px solid var(--primary-color); outline: none;">
+                <button class="close-search-btn" id="close-search-btn" style="position: relative; top: auto; right: auto; background: var(--accent-red); border: 4px solid var(--primary-color); box-shadow: 4px 4px 0px 0px var(--shadow-color); font-size: 2rem; color: white; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; cursor: pointer;">&times;</button>
+            </div>
+            <div class="search-results" id="search-results" style="max-height: 50vh; overflow-y: auto;">
+                <!-- Results injected here -->
+            </div>
+        </div>
+    </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', searchModalTemplate);
+
+    const searchModal = document.getElementById('search-modal');
+    const searchOverlay = document.getElementById('search-overlay');
+    const closeSearchBtn = document.getElementById('close-search-btn');
+    const searchInput = document.getElementById('search-input');
+    const searchResults = document.getElementById('search-results');
+
+    document.querySelectorAll('.search-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            searchModal.classList.add('active');
+            setTimeout(() => searchInput.focus(), 100);
+            document.body.style.overflow = 'hidden';
+            searchInput.value = '';
+            searchResults.innerHTML = '';
+        });
+    });
+
+    function closeSearch() {
+        searchModal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    closeSearchBtn.addEventListener('click', closeSearch);
+    searchOverlay.addEventListener('click', closeSearch);
+
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        if (query.length < 2) {
+            searchResults.innerHTML = '';
+            return;
+        }
+        
+        const results = products.filter(p => 
+            p.title.toLowerCase().includes(query) || 
+            p.category.toLowerCase().includes(query) ||
+            p.brand.toLowerCase().includes(query)
+        );
+        
+        if (results.length === 0) {
+            searchResults.innerHTML = '<p style="text-align:center; margin-top:20px; font-weight:800;">No products found.</p>';
+            return;
+        }
+        
+        searchResults.innerHTML = results.map(p => `
+            <div class="search-result-item" onclick="document.getElementById('search-modal').classList.remove('active'); document.body.style.overflow=''; openPDP(${p.id});" style="display:flex; align-items:center; gap:15px; border-bottom:2px dashed #000; padding:15px 10px; cursor:pointer;">
+                <img src="${p.image}" style="width:60px; height:80px; object-fit:cover; border:2px solid var(--primary-color);">
+                <div>
+                    <div style="font-weight:800; font-family:var(--font-heading);">${p.title}</div>
+                    <div style="color:var(--text-color); font-weight:600;">₹${p.price}</div>
+                </div>
+            </div>
+        `).join('');
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && searchModal && searchModal.classList.contains('active')) {
+            closeSearch();
+        }
+    });
+
+    // Tracking Modal Close Listeners
+    const closeTrackingBtn = document.getElementById('close-tracking-btn');
+    const trackingOverlay = document.getElementById('tracking-overlay');
+    if (closeTrackingBtn) closeTrackingBtn.addEventListener('click', closeTracking);
+    if (trackingOverlay) trackingOverlay.addEventListener('click', closeTracking);
+
+    // Add styles for search result hover dynamically
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .search-result-item:hover { background: var(--accent-yellow); transition: background 0.2s; }
+    `;
+    document.head.appendChild(style);
+});
