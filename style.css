@@ -670,7 +670,6 @@ h1, h2, h3, h4, h5, h6 {
     border-bottom: var(--border-width) solid var(--primary-color);
     overflow: hidden;
     position: relative;
-    order: 3; /* Image comes after the button */
 }
 
 .product-image img {
@@ -687,7 +686,6 @@ h1, h2, h3, h4, h5, h6 {
 .product-card-bottom {
     padding: 15px;
     background: #fff;
-    order: 4;
 }
 
 .product-brand {
@@ -717,7 +715,6 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 900;
     padding: 15px;
     font-size: 1rem;
-    order: 2; /* After top bar */
 }
 
 .add-to-cart-btn:hover {

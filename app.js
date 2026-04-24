@@ -330,12 +330,12 @@ function renderProducts(productsToRender) {
                     <span>${product.rating}</span>
                 </div>
             </div>
-            <button class="btn btn-primary add-to-cart-btn" onclick="addToCart(${product.id}, 'L')">
-                ADD TO BAG
-            </button>
             <div class="product-image" onclick="openPDP(${product.id})" style="cursor: pointer;">
                 <img src="${product.image}" loading="lazy" alt="${product.title}">
             </div>
+            <button class="btn btn-primary add-to-cart-btn" onclick="addToCart(${product.id}, 'L')">
+                ADD TO BAG
+            </button>
             <div class="product-card-bottom">
                 <div class="product-brand">${product.brand}</div>
                 <h3 class="product-title" onclick="openPDP(${product.id})" style="cursor: pointer;">${product.title}</h3>
