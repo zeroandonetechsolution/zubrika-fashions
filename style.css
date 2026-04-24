@@ -1570,3 +1570,156 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
+
+/* Search Modal Styles */
+
+.search-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 300;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 10vh;
+}
+
+.search-modal.active {
+    display: flex;
+}
+
+.search-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(5px);
+}
+
+.search-content {
+    position: relative;
+    width: 90%;
+    max-width: 800px;
+    background: var(--bg-color);
+    border: var(--border-width) solid var(--primary-color);
+    box-shadow: 12px 12px 0px 0px var(--shadow-color);
+    padding: 30px;
+    z-index: 2;
+    transform: translateY(-20px);
+    opacity: 0;
+    animation: slideDown 0.3s forwards;
+}
+
+@keyframes slideDown {
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.close-search-btn {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    font-size: 2.5rem;
+    color: white;
+    cursor: pointer;
+}
+
+/* Tracking Timeline Styles */
+.tracking-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    position: relative;
+    padding-left: 40px;
+}
+
+.tracking-timeline::before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 5px;
+    bottom: 5px;
+    width: 4px;
+    background: var(--primary-color);
+    opacity: 0.2;
+}
+
+.timeline-step {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -33px;
+    top: 5px;
+    width: 14px;
+    height: 14px;
+    background: var(--bg-color);
+    border: 3px solid var(--primary-color);
+    border-radius: 0; /* Brutalism */
+    z-index: 1;
+    transition: all 0.3s;
+}
+
+.timeline-step.completed .timeline-dot {
+    background: var(--accent-yellow);
+    transform: rotate(45deg); /* Brutalist diamond */
+}
+
+.timeline-step.active .timeline-dot {
+    background: var(--accent-red);
+    box-shadow: 0 0 0 4px var(--bg-color), 0 0 0 7px var(--accent-red);
+}
+
+.timeline-label {
+    font-weight: 900;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+}
+
+.timeline-time {
+    font-size: 0.8rem;
+    font-weight: 600;
+    opacity: 0.6;
+}
+
+.timeline-step.completed .timeline-label {
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
+.tracking-modal {
+    border: 4px solid var(--primary-color) !important;
+    box-shadow: 12px 12px 0px 0px var(--shadow-color) !important;
+}
+
+/* WhatsApp Floating Button */
+.whatsapp-float {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #fff;
+    color: #25d366;
+    border-radius: 50px;
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    z-index: 999;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.05);
+}
+
+.whatsapp-content {
