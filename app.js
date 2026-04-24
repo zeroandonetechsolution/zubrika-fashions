@@ -35,7 +35,7 @@ const products = [
         discount: 35,
         rating: 4.9,
         reviews: 210,
-        image: "https://images.unsplash.com/photo-1596755094514-f87e32f85e2c?w=600&q=80",
+        image: "https://images.unsplash.com/photo-1617137968427-85924c800a22?w=800&q=80",
         isNew: true,
         category: "shirts"
     },
@@ -1058,6 +1058,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    const desktopSearchInput = document.getElementById('desktop-search-input');
+    if (desktopSearchInput) {
+        desktopSearchInput.addEventListener('focus', () => {
+            searchModal.classList.add('active');
+            setTimeout(() => searchInput.focus(), 100);
+            document.body.style.overflow = 'hidden';
+            searchInput.value = desktopSearchInput.value;
+            // Trigger input event to show results if there's already value
+            if (searchInput.value) {
+                searchInput.dispatchEvent(new Event('input'));
+            }
+            desktopSearchInput.value = ''; // Clear it so it's ready for next time
+            desktopSearchInput.blur();
+        });
+    }
+
     function closeSearch() {
         searchModal.classList.remove('active');
         document.body.style.overflow = '';
@@ -1084,15 +1100,37 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        searchResults.innerHTML = results.map(p => `
-            <div class="search-result-item" onclick="document.getElementById('search-modal').classList.remove('active'); document.body.style.overflow=''; openPDP(${p.id});" style="display:flex; align-items:center; gap:15px; border-bottom:2px dashed #000; padding:15px 10px; cursor:pointer;">
-                <img src="${p.image}" style="width:60px; height:80px; object-fit:cover; border:2px solid var(--primary-color);">
-                <div>
-                    <div style="font-weight:800; font-family:var(--font-heading);">${p.title}</div>
-                    <div style="color:var(--text-color); font-weight:600;">₹${p.price}</div>
+        searchResults.innerHTML = results.map(p => {
+            let badgesHtml = '';
+            if (p.discount > 0) badgesHtml += `<div class="badge badge-discount">-${p.discount}%</div>`;
+            if (p.isNew) badgesHtml += `<div class="badge badge-new">NEW</div>`;
+            
+            return `
+            <div class="product-card" style="animation: fadeIn 0.4s ease backwards;">
+                <div class="product-badges">${badgesHtml}</div>
+                <div class="product-card-top">
+                    <div class="product-price">
+                        <span class="current-price">₹${p.price}</span>
+                        ${p.originalPrice ? `<span class="original-price">₹${p.originalPrice}</span>` : ''}
+                    </div>
+                    <div class="product-rating">
+                        <i class="fas fa-star"></i>
+                        <span>${p.rating}</span>
+                    </div>
+                </div>
+                <div class="product-image" onclick="document.getElementById('search-modal').classList.remove('active'); document.body.style.overflow=''; openPDP(${p.id})" style="cursor: pointer; height: 250px;">
+                    <img src="${p.image}" alt="${p.title}">
+                </div>
+                <button class="btn btn-primary add-to-cart-btn" onclick="addToCart(${p.id}, 'L')">
+                    ADD TO BAG
+                </button>
+                <div class="product-card-bottom">
+                    <div class="product-brand">${p.brand}</div>
+                    <h3 class="product-title" onclick="document.getElementById('search-modal').classList.remove('active'); document.body.style.overflow=''; openPDP(${p.id})" style="cursor: pointer;">${p.title}</h3>
                 </div>
             </div>
-        `).join('');
+            `;
+        }).join('');
     });
 
     document.addEventListener('keydown', (e) => {
