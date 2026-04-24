@@ -1571,65 +1571,95 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 
-/* Search Modal Styles */
 
+/* Immersive Search Modal */
 .search-modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 300;
+    z-index: 3000;
     display: none;
-    align-items: flex-start;
-    justify-content: center;
-    padding-top: 10vh;
+    background: var(--bg-color);
 }
 
 .search-modal.active {
     display: flex;
 }
 
-.search-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
+.search-container-full {
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(5px);
-}
-
-.search-content {
+    display: flex;
+    flex-direction: column;
+    padding: 60px 10%;
     position: relative;
-    width: 90%;
-    max-width: 800px;
-    background: var(--bg-color);
-    border: var(--border-width) solid var(--primary-color);
-    box-shadow: 12px 12px 0px 0px var(--shadow-color);
-    padding: 30px;
     z-index: 2;
-    transform: translateY(-20px);
-    opacity: 0;
-    animation: slideDown 0.3s forwards;
 }
 
-@keyframes slideDown {
-    to { transform: translateY(0); opacity: 1; }
+.search-header-full {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 4px solid var(--primary-color);
+    padding-bottom: 20px;
+    margin-bottom: 40px;
 }
 
-.close-search-btn {
-    position: absolute;
-    top: -40px;
-    right: 0;
-    background: none;
+.search-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-grow: 1;
+}
+
+.search-icon-inside {
+    font-size: 2rem;
+    color: var(--primary-color);
+}
+
+.full-search-input {
+    width: 100%;
     border: none;
-    font-size: 2.5rem;
-    color: white;
-    cursor: pointer;
+    background: none;
+    font-size: 3rem;
+    font-family: var(--font-heading);
+    font-weight: 900;
+    text-transform: uppercase;
+    outline: none;
+    color: var(--primary-color);
 }
 
-/* Tracking Timeline Styles */
+.close-search-btn-full {
+    background: var(--accent-red);
+    border: 3px solid var(--primary-color);
+    color: #fff;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    cursor: pointer;
+    box-shadow: 6px 6px 0px 0px var(--shadow-color);
+    transition: all 0.2s;
+}
+
+.close-search-btn-full:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 8px 8px 0px 0px var(--shadow-color);
+}
+
+.search-results-full {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 30px;
+    overflow-y: auto;
+    padding-bottom: 40px;
+}
+
+/* Restoring Timeline Styles that might have been hit */
 .tracking-timeline {
     display: flex;
     flex-direction: column;
@@ -1664,14 +1694,14 @@ h1, h2, h3, h4, h5, h6 {
     height: 14px;
     background: var(--bg-color);
     border: 3px solid var(--primary-color);
-    border-radius: 0; /* Brutalism */
+    border-radius: 0;
     z-index: 1;
     transition: all 0.3s;
 }
 
 .timeline-step.completed .timeline-dot {
     background: var(--accent-yellow);
-    transform: rotate(45deg); /* Brutalist diamond */
+    transform: rotate(45deg);
 }
 
 .timeline-step.active .timeline-dot {
@@ -1690,36 +1720,3 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
     opacity: 0.6;
 }
-
-.timeline-step.completed .timeline-label {
-    text-decoration: line-through;
-    opacity: 0.5;
-}
-
-.tracking-modal {
-    border: 4px solid var(--primary-color) !important;
-    box-shadow: 12px 12px 0px 0px var(--shadow-color) !important;
-}
-
-/* WhatsApp Floating Button */
-.whatsapp-float {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #fff;
-    color: #25d366;
-    border-radius: 50px;
-    padding: 8px 15px;
-    display: flex;
-    align-items: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    z-index: 999;
-    text-decoration: none;
-    transition: transform 0.3s ease;
-}
-
-.whatsapp-float:hover {
-    transform: scale(1.05);
-}
-
-.whatsapp-content {

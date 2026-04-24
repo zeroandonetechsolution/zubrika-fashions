@@ -1025,12 +1025,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchModalTemplate = `
     <div class="search-modal" id="search-modal">
         <div class="search-overlay" id="search-overlay"></div>
-        <div class="search-content">
-            <div class="search-header" style="display: flex; gap: 20px; align-items: center; margin-bottom: 20px;">
-                <input type="text" id="search-input" class="brutal-input search-input" placeholder="Search for T-Shirts, Pants, etc..." autocomplete="off" style="flex-grow: 1; padding: 20px; font-size: 1.5rem; font-weight: 800; border: 4px solid var(--primary-color); outline: none;">
-                <button class="close-search-btn" id="close-search-btn" style="position: relative; top: auto; right: auto; background: var(--accent-red); border: 4px solid var(--primary-color); box-shadow: 4px 4px 0px 0px var(--shadow-color); font-size: 2rem; color: white; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; cursor: pointer;">&times;</button>
+        <div class="search-container-full">
+            <div class="search-header-full">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon-inside"></i>
+                    <input type="text" id="search-input" class="full-search-input" placeholder="What are you looking for?" autocomplete="off">
+                </div>
+                <button class="close-search-btn-full" id="close-search-btn">&times;</button>
             </div>
-            <div class="search-results" id="search-results" style="max-height: 50vh; overflow-y: auto;">
+            <div class="search-results-full" id="search-results">
                 <!-- Results injected here -->
             </div>
         </div>
