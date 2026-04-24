@@ -236,7 +236,24 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (max-width: 1024px) {
     .header-search-container {
-        display: none;
+        margin: 0 15px;
+        max-width: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-container {
+        flex-wrap: wrap;
+        padding: 10px 20px;
+    }
+    .header-search-container {
+        order: 3;
+        width: 100%;
+        max-width: none;
+        margin: 10px 0 5px 0;
+    }
+    .logo {
+        flex: 1;
     }
 }
 

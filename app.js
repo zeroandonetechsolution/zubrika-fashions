@@ -191,7 +191,8 @@ let selectedSize = 'L'; // Default size for modal
 const filterState = {
     sort: 'featured',
     categories: [],
-    price: 'all'
+    price: 'all',
+    search: ''
 };
 
 // DOM Elements
@@ -299,7 +300,8 @@ function renderProducts(productsToRender) {
     productList.innerHTML = '';
     
     if (productsToRender.length === 0) {
-        productList.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 40px; font-weight:800; font-size:1.5rem;">No products found matching these filters.</div>';
+        const message = filterState.search ? `No products found matching "${filterState.search}".` : 'No products found matching these filters.';
+        productList.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 40px; font-weight:800; font-size:1.5rem; border: 4px solid var(--primary-color);">${message}</div>`;
         return;
     }
     
@@ -539,6 +541,16 @@ function selectSize(btn, size) {
 function applyFilters() {
     let result = [...products];
     
+    // Filter by search
+    if (filterState.search) {
+        const query = filterState.search.toLowerCase();
+        result = result.filter(p => 
+            p.title.toLowerCase().includes(query) || 
+            p.brand.toLowerCase().includes(query) ||
+            p.category.toLowerCase().includes(query)
+        );
+    }
+
     // Filter by New Arrivals if needed
     if (filterState.isNew) {
         result = result.filter(p => p.isNew);
@@ -860,14 +872,23 @@ function completeCheckout() {
     successModal.classList.add('active');
 }
 
-function renderOrders() {
+function renderOrders(searchQuery = '') {
     const ordersContainer = document.getElementById('orders-list');
     if (!ordersContainer) return; // Ensure we only run on orders.html
 
-    const orders = JSON.parse(localStorage.getItem('zubrikaOrders')) || [];
+    let orders = JSON.parse(localStorage.getItem('zubrikaOrders')) || [];
+    
+    if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        orders = orders.filter(order => 
+            order.id.toLowerCase().includes(query) ||
+            order.items.some(item => item.title.toLowerCase().includes(query))
+        );
+    }
     
     if (orders.length === 0) {
-        ordersContainer.innerHTML = '<div style="text-align:center; padding: 40px; font-weight:800; font-size:1.5rem; border: 4px solid var(--primary-color);">You have no past orders.</div>';
+        const message = searchQuery ? `No orders found matching "${searchQuery}".` : 'You have no past orders.';
+        ordersContainer.innerHTML = `<div style="text-align:center; padding: 40px; font-weight:800; font-size:1.5rem; border: 4px solid var(--primary-color);">${message}</div>`;
         return;
     }
     
@@ -1020,123 +1041,35 @@ function closeSuccessModal() {
     window.location.href = '#';
 }
 
-// Search Modal Logic
+// In-page Search Logic
 document.addEventListener('DOMContentLoaded', () => {
-    const searchModalTemplate = `
-    <div class="search-modal" id="search-modal">
-        <div class="search-overlay" id="search-overlay"></div>
-        <div class="search-container-full">
-            <div class="search-header-full">
-                <div class="search-input-wrapper">
-                    <i class="fas fa-search search-icon-inside"></i>
-                    <input type="text" id="search-input" class="full-search-input" placeholder="What are you looking for?" autocomplete="off">
-                </div>
-                <button class="close-search-btn-full" id="close-search-btn">&times;</button>
-            </div>
-            <div class="search-results-full" id="search-results">
-                <!-- Results injected here -->
-            </div>
-        </div>
-    </div>
-    `;
-
-    document.body.insertAdjacentHTML('beforeend', searchModalTemplate);
-
-    const searchModal = document.getElementById('search-modal');
-    const searchOverlay = document.getElementById('search-overlay');
-    const closeSearchBtn = document.getElementById('close-search-btn');
-    const searchInput = document.getElementById('search-input');
-    const searchResults = document.getElementById('search-results');
-
-    document.querySelectorAll('.search-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            searchModal.classList.add('active');
-            setTimeout(() => searchInput.focus(), 100);
-            document.body.style.overflow = 'hidden';
-            searchInput.value = '';
-            searchResults.innerHTML = '';
-        });
-    });
-
     const desktopSearchInput = document.getElementById('desktop-search-input');
+    
     if (desktopSearchInput) {
-        desktopSearchInput.addEventListener('focus', () => {
-            searchModal.classList.add('active');
-            setTimeout(() => searchInput.focus(), 100);
-            document.body.style.overflow = 'hidden';
-            searchInput.value = desktopSearchInput.value;
-            // Trigger input event to show results if there's already value
-            if (searchInput.value) {
-                searchInput.dispatchEvent(new Event('input'));
+        desktopSearchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            
+            if (document.getElementById('product-list')) {
+                filterState.search = query;
+                applyFilters();
+            } else if (document.getElementById('orders-list')) {
+                renderOrders(query);
             }
-            desktopSearchInput.value = ''; // Clear it so it's ready for next time
-            desktopSearchInput.blur();
         });
     }
 
-    function closeSearch() {
-        searchModal.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-
-    closeSearchBtn.addEventListener('click', closeSearch);
-    searchOverlay.addEventListener('click', closeSearch);
-
-    searchInput.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase().trim();
-        if (query.length < 2) {
-            searchResults.innerHTML = '';
-            return;
-        }
-        
-        const results = products.filter(p => 
-            p.title.toLowerCase().includes(query) || 
-            p.category.toLowerCase().includes(query) ||
-            p.brand.toLowerCase().includes(query)
-        );
-        
-        if (results.length === 0) {
-            searchResults.innerHTML = '<p style="text-align:center; margin-top:20px; font-weight:800;">No products found.</p>';
-            return;
-        }
-        
-        searchResults.innerHTML = results.map(p => {
-            let badgesHtml = '';
-            if (p.discount > 0) badgesHtml += `<div class="badge badge-discount">-${p.discount}%</div>`;
-            if (p.isNew) badgesHtml += `<div class="badge badge-new">NEW</div>`;
-            
-            return `
-            <div class="product-card" style="animation: fadeIn 0.4s ease backwards;">
-                <div class="product-badges">${badgesHtml}</div>
-                <div class="product-card-top">
-                    <div class="product-price">
-                        <span class="current-price">₹${p.price}</span>
-                        ${p.originalPrice ? `<span class="original-price">₹${p.originalPrice}</span>` : ''}
-                    </div>
-                    <div class="product-rating">
-                        <i class="fas fa-star"></i>
-                        <span>${p.rating}</span>
-                    </div>
-                </div>
-                <div class="product-image" onclick="document.getElementById('search-modal').classList.remove('active'); document.body.style.overflow=''; openPDP(${p.id})" style="cursor: pointer; height: 250px;">
-                    <img src="${p.image}" alt="${p.title}">
-                </div>
-                <button class="btn btn-primary add-to-cart-btn" onclick="addToCart(${p.id}, 'L')">
-                    ADD TO BAG
-                </button>
-                <div class="product-card-bottom">
-                    <div class="product-brand">${p.brand}</div>
-                    <h3 class="product-title" onclick="document.getElementById('search-modal').classList.remove('active'); document.body.style.overflow=''; openPDP(${p.id})" style="cursor: pointer;">${p.title}</h3>
-                </div>
-            </div>
-            `;
-        }).join('');
-    });
-
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && searchModal && searchModal.classList.contains('active')) {
-            closeSearch();
-        }
+    // Update search buttons to focus the header search bar instead of opening a modal
+    document.querySelectorAll('.search-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (desktopSearchInput) {
+                desktopSearchInput.focus();
+                // Smooth scroll to search if needed on mobile
+                if (window.innerWidth < 768) {
+                    desktopSearchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
     });
 
     // Tracking Modal Close Listeners
