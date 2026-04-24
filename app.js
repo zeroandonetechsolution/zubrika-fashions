@@ -323,10 +323,6 @@ function renderProducts(productsToRender) {
                 ${badgesHtml}
             </div>
             <div class="product-card-top">
-                <div class="product-price">
-                    <span class="current-price">₹${product.price}</span>
-                    ${product.originalPrice ? `<span class="original-price">₹${product.originalPrice}</span>` : ''}
-                </div>
                 <div class="product-rating">
                     <i class="fas fa-star"></i>
                     <span>${product.rating}</span>
@@ -334,6 +330,10 @@ function renderProducts(productsToRender) {
             </div>
             <div class="product-image" onclick="openPDP(${product.id})" style="cursor: pointer;">
                 <img src="${product.image}" loading="lazy" alt="${product.title}">
+            </div>
+            <div class="product-price product-price-below">
+                <span class="current-price">₹${product.price}</span>
+                ${product.originalPrice ? `<span class="original-price">₹${product.originalPrice}</span>` : ''}
             </div>
             <button class="btn btn-primary add-to-cart-btn" onclick="addToCart(${product.id}, 'L')">
                 ADD TO BAG
